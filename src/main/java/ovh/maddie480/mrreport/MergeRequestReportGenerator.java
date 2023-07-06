@@ -21,7 +21,7 @@ public class MergeRequestReportGenerator {
         Map<String, Map<String, List<MergeRequest>>> mergeRequestsPerUserPerProject = new HashMap<>();
         Map<String, String> usernamesToNames = new HashMap<>();
 
-        for (Map.Entry<String, Long> project : getProjectIds().entrySet()) {
+        for (Map.Entry<String, Long> project : GitLabUtils.getProjectIds().entrySet()) {
             logger.debug("Listing MRs of project {}...", project.getKey());
             MergeRequestReportResult result = mrReport(project.getValue().intValue());
 
@@ -48,25 +48,6 @@ public class MergeRequestReportGenerator {
         }
 
         logger.debug("Done!");
-    }
-
-    private static Map<String, Long> getProjectIds() throws IOException {
-        Map<String, Long> projectIds = new TreeMap<>();
-
-        for (JSONObject group : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + System.getenv("GITLAB_GROUP_ID") + "/descendant_groups?page=")) {
-            long groupId = group.getLong("id");
-
-            logger.debug("Going through projects of group {} ({})...", group.getString("full_name"), groupId);
-
-            for (JSONObject project : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + groupId + "/projects?page=")) {
-                if (!project.getString("path").startsWith("test-project-")) {
-                    projectIds.put(project.getString("name_with_namespace"), project.getLong("id"));
-                }
-            }
-        }
-
-        logger.debug("Got project IDs: {}", projectIds);
-        return projectIds;
     }
 
     private record MergeRequestReportResult(List<MergeRequest> retrievedMergeRequests,

@@ -12,9 +12,30 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public final class GitLabUtils {
     private static final Logger logger = LoggerFactory.getLogger(GitLabUtils.class);
+
+    public static Map<String, Long> getProjectIds() throws IOException {
+        Map<String, Long> projectIds = new TreeMap<>();
+
+        for (JSONObject group : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + System.getenv("GITLAB_GROUP_ID") + "/descendant_groups?page=")) {
+            long groupId = group.getLong("id");
+
+            logger.debug("Going through projects of group {} ({})...", group.getString("full_name"), groupId);
+
+            for (JSONObject project : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + groupId + "/projects?page=")) {
+                if (!project.getString("path").startsWith("test-project-")) {
+                    projectIds.put(project.getString("name_with_namespace"), project.getLong("id"));
+                }
+            }
+        }
+
+        logger.debug("Got project IDs: {}", projectIds);
+        return projectIds;
+    }
 
     public static InputStream authenticatedRequest(String url) throws IOException {
         logger.debug("Requesting GitLab URL {}", url);
