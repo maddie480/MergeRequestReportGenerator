@@ -1,0 +1,41 @@
+name: Update merge request list
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '15,30,45 9-18 * * 1-5'
+    - cron: '0 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 20
+      uses: actions/setup-java@v3
+      with:
+        java-version: '20'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B package
+
+    - name: Run merge request generator
+      env:
+        GITLAB_ACCESS_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+        GITLAB_TIMEZONE: ${{ secrets.GITLAB_TIMEZONE }}
+        GITLAB_NEEDS_REVIEW_LABELS: ${{ secrets.GITLAB_NEEDS_REVIEW_LABELS }}
+        GITLAB_GROUP_ID: ${{ secrets.GITLAB_GROUP_ID }}
+      run: java -jar target/merge-request-report-generator-1.0-SNAPSHOT.jar
+
+    - name: Zip and send result
+      env:
+        GITLAB_POST_URL: ${{ secrets.GITLAB_POST_URL }}
+      run: |
+        cd /tmp/mr_report_generator
+        zip /tmp/result.zip *
+        curl -X POST "$GITLAB_POST_URL" --fail --retry 3 --connect-timeout 60 --max-time 60 --data-binary @/tmp/result.zip
