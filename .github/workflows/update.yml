@@ -38,5 +38,5 @@ jobs:
         GITLAB_POST_URL: ${{ secrets.GITLAB_POST_URL }}
       run: |
         cd /tmp/mr_report_generator
-        zip /tmp/result.zip *
+        zip -qq /tmp/result.zip *
         curl -X POST "$GITLAB_POST_URL" --fail --retry 3 --connect-timeout 60 --max-time 60 --data-binary @/tmp/result.zip
