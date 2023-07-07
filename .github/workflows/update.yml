@@ -36,7 +36,8 @@ jobs:
     - name: Zip and send result
       env:
         GITLAB_POST_URL: ${{ secrets.GITLAB_POST_URL }}
+        GITLAB_POST_BASIC_AUTH: ${{ secrets.GITLAB_POST_BASIC_AUTH }}
       run: |
         cd /tmp/mr_report_generator
         zip -qq /tmp/result.zip *
-        curl -X POST "$GITLAB_POST_URL" --fail --retry 3 --connect-timeout 60 --max-time 60 --data-binary @/tmp/result.zip
+        curl "${GITLAB_POST_URL}" -X POST -u "${GITLAB_POST_BASIC_AUTH}" --fail --data-binary @/tmp/result.zip

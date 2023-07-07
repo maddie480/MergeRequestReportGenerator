@@ -18,6 +18,7 @@ The following environment variables / GitHub Actions secrets should be defined:
 - `GITLAB_NEEDS_REVIEW_LABELS`: a comma-separated list of labels that tag merge request that need reviews
 - `GITLAB_TIMEZONE`: the tz database timezone to use for the last updated date on the reports
 - `GITLAB_POST_URL`: _(for the GitHub action only)_ the URL that should be called with the zipped HTML files
+- `GITLAB_POST_BASIC_AUTH`: _(for the GitHub action only)_ the Basic auth (`username:password`) to use when calling the post URL
 
 ## Merge request leaderboard
 
