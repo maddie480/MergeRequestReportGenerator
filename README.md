@@ -17,6 +17,7 @@ The following environment variables / GitHub Actions secrets should be defined:
 - `GITLAB_GROUP_ID`: the ID of the group to report on
 - `GITLAB_NEEDS_REVIEW_LABELS`: a comma-separated list of labels that tag merge request that need reviews
 - `GITLAB_TIMEZONE`: the tz database timezone to use for the last updated date on the reports
+- `GITLAB_IGNORED_PREFIXES`: A comma-separated list of project name prefixes to exclude from the report
 - `GITLAB_POST_URL`: _(for the GitHub action only)_ the URL that should be called with the zipped HTML files
 - `GITLAB_POST_BASIC_AUTH`: _(for the GitHub action only)_ the Basic auth (`username:password`) to use when calling the post URL
 
@@ -32,5 +33,7 @@ and post it on Slack. Each user gets points as follows:
 The following environment variables / GitHub Actions secrets should be defined:
 - `GITLAB_ACCESS_TOKEN`: a GitLab personal access token with the `read_api` scope, that has access to the targeted repositories
 - `GITLAB_GROUP_ID`: the ID of the group to report on
+- `GITLAB_IGNORED_PREFIXES`: A comma-separated list of project name prefixes to ignore when building the leaderboard
+- `GITLAB_EXCLUDED_NICKNAMES`: A comma-separated list of display names to exclude from the leaderboard
 - `GITLAB_SLACK_TOKEN`: the bot token that will be used to post the leaderboard
 - `GITLAB_SLACK_CHANNEL`: the channel the leaderboard will be posted to
