@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public final class GitLabUtils {
             logger.debug("Going through projects of group {} ({})...", group.getString("full_name"), groupId);
 
             for (JSONObject project : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + groupId + "/projects?page=")) {
-                if (!project.getString("path").startsWith("test-project-")) {
+                if (Arrays.stream(System.getenv("GITLAB_IGNORED_PREFIXES").split(",")).noneMatch(p -> project.getString("path").startsWith(p))) {
                     projectIds.put(project.getString("name_with_namespace"), project.getLong("id"));
                 }
             }

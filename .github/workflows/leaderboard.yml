@@ -29,4 +29,6 @@ jobs:
         GITLAB_SLACK_TOKEN: ${{ secrets.GITLAB_SLACK_TOKEN }}
         GITLAB_SLACK_CHANNEL: ${{ secrets.GITLAB_SLACK_CHANNEL }}
         GITLAB_GROUP_ID: ${{ secrets.GITLAB_GROUP_ID }}
+        GITLAB_IGNORED_PREFIXES: ${{ secrets.GITLAB_IGNORED_PREFIXES }}
+        GITLAB_EXCLUDED_NICKNAMES: ${{ secrets.GITLAB_EXCLUDED_NICKNAMES }}
       run: java -cp target/merge-request-report-generator-1.0-SNAPSHOT.jar ovh.maddie480.mrreport.MergeRequestLeaderboardGenerator

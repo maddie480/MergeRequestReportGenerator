@@ -31,6 +31,7 @@ jobs:
         GITLAB_TIMEZONE: ${{ secrets.GITLAB_TIMEZONE }}
         GITLAB_NEEDS_REVIEW_LABELS: ${{ secrets.GITLAB_NEEDS_REVIEW_LABELS }}
         GITLAB_GROUP_ID: ${{ secrets.GITLAB_GROUP_ID }}
+        GITLAB_IGNORED_PREFIXES: ${{ secrets.GITLAB_IGNORED_PREFIXES }}
       run: java -jar target/merge-request-report-generator-1.0-SNAPSHOT.jar
 
     - name: Zip and send result

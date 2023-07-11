@@ -96,8 +96,12 @@ public class MergeRequestLeaderboardGenerator {
                 .append(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("MMMM", Locale.FRENCH)))
                 .append("*\n");
 
+        List<String> excludedNicknames = Arrays.stream(System.getenv("GITLAB_EXCLUDED_NICKNAMES").split(",")).toList();
+
         int rank = 1;
         for (String nick : rankings) {
+            if (excludedNicknames.contains(nick)) continue;
+
             message
                     .append('*').append(rank).append(rank == 1 ? "er" : "ème").append("* - *")
                     .append(nick).append("* avec ")
