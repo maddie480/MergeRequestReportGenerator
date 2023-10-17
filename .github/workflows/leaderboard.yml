@@ -1,11 +1,5 @@
 name: Post MR leaderboard
 
-on:
-  push:
-    branches: [ mr-leaderboard ]
-  schedule:
-    - cron: '0 16 * * 1-5'
-
 jobs:
   build:
     runs-on: ubuntu-latest
