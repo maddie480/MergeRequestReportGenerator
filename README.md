@@ -37,3 +37,14 @@ The following environment variables / GitHub Actions secrets should be defined:
 - `GITLAB_EXCLUDED_NICKNAMES`: A comma-separated list of display names to exclude from the leaderboard
 - `GITLAB_SLACK_TOKEN`: the bot token that will be used to post the leaderboard
 - `GITLAB_SLACK_CHANNEL`: the channel the leaderboard will be posted to
+
+## Merge request auto-labeler
+
+This class labels all merge requests in a group automatically, based on the amount of approvals there were given from a specific group.
+
+The following environment variables / GitHub Actions secrets should be defined:
+- `GITLAB_ACCESS_TOKEN`: a GitLab personal access token with the `api` scope, that has access to the targeted repositories
+- `GITLAB_GROUP_ID`: the ID of the group to report on
+- `GITLAB_IGNORED_PREFIXES`: a comma-separated list of project name prefixes to ignore when building the leaderboard
+- `GITLAB_LABEL_GROUP_NAME`: the group of people that should be counted for the label
+- `GITLAB_LABEL_NAME`: the name of the label (the label that will be applied is <label_name>::<approver_count>)
