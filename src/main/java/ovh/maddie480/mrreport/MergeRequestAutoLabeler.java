@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class MergeRequestAutoLabeler {
@@ -28,33 +28,7 @@ public class MergeRequestAutoLabeler {
         for (JSONObject mergeRequest : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/projects/" + projectId + "/merge_requests?state=opened&with_merge_status_recheck=true&page=")) {
             int mergeRequestId = mergeRequest.getInt("iid");
 
-            JSONObject approvals = ConnectionUtils.runWithRetry(() -> {
-                try (InputStream is = GitLabUtils.authenticatedRequest("https://gitlab.com/api/v4/projects/" + projectId + "/merge_requests/" + mergeRequestId + "/approval_state")) {
-                    return new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
-                }
-            });
-
-            int approvalCount = -1;
-
-            for (Object r : approvals.getJSONArray("rules")) {
-                JSONObject rule = (JSONObject) r;
-
-                boolean hasGroup = false;
-
-                for (Object g : rule.getJSONArray("groups")) {
-                    JSONObject group = (JSONObject) g;
-                    if (System.getenv("GITLAB_LABEL_GROUP_NAME").equals(group.getString("full_path"))) {
-                        hasGroup = true;
-                        break;
-                    }
-                }
-
-                if (hasGroup) {
-                    approvalCount = rule.getJSONArray("approved_by").length();
-                    logger.debug("MR !{} => {} approval(s)", mergeRequestId, approvalCount);
-                    break;
-                }
-            }
+            int approvalCount = getApprovalCount(projectId, mergeRequestId);
 
             if (approvalCount == -1) {
                 logger.debug("MR !{} => no group found!", mergeRequestId);
@@ -84,5 +58,37 @@ public class MergeRequestAutoLabeler {
                 return null;
             });
         }
+    }
+
+    static int getApprovalCount(int projectId, int mergeRequestId) throws IOException {
+        JSONObject approvals = ConnectionUtils.runWithRetry(() -> {
+            try (InputStream is = GitLabUtils.authenticatedRequest("https://gitlab.com/api/v4/projects/" + projectId + "/merge_requests/" + mergeRequestId + "/approval_state")) {
+                return new JSONObject(IOUtils.toString(is, StandardCharsets.UTF_8));
+            }
+        });
+
+        int approvalCount = -1;
+
+        for (Object r : approvals.getJSONArray("rules")) {
+            JSONObject rule = (JSONObject) r;
+
+            boolean hasGroup = false;
+
+            for (Object g : rule.getJSONArray("groups")) {
+                JSONObject group = (JSONObject) g;
+                if (System.getenv("GITLAB_LABEL_GROUP_NAME").equals(group.getString("full_path"))) {
+                    hasGroup = true;
+                    break;
+                }
+            }
+
+            if (hasGroup) {
+                approvalCount = rule.getJSONArray("approved_by").length();
+                logger.debug("MR !{} => {} approval(s)", mergeRequestId, approvalCount);
+                break;
+            }
+        }
+
+        return approvalCount;
     }
 }

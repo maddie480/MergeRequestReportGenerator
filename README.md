@@ -45,6 +45,19 @@ This class labels all merge requests in a group automatically, based on the amou
 The following environment variables / GitHub Actions secrets should be defined:
 - `GITLAB_ACCESS_TOKEN`: a GitLab personal access token with the `api` scope, that has access to the targeted repositories
 - `GITLAB_GROUP_ID`: the ID of the group to report on
-- `GITLAB_IGNORED_PREFIXES`: a comma-separated list of project name prefixes to ignore when building the leaderboard
+- `GITLAB_IGNORED_PREFIXES`: a comma-separated list of project name prefixes to ignore in the process
 - `GITLAB_LABEL_GROUP_NAME`: the group of people that should be counted for the label
 - `GITLAB_LABEL_NAME`: the name of the label (the label that will be applied is <label_name>::<approver_count>)
+
+## Merge request auto-reactor on Slack
+
+This class makes a bot react automatically on all messages in a channel containing a link to a merge request, with the approval count.
+
+The following environment variables / GitHub Actions secrets should be defined:
+- `GITLAB_ACCESS_TOKEN`: a GitLab personal access token with the `read_api` scope, that has access to the targeted repositories
+- `GITLAB_GROUP_ID`: the ID of the group to report on
+- `GITLAB_IGNORED_PREFIXES`: a comma-separated list of project name prefixes to ignore in the process
+- `GITLAB_LABEL_GROUP_NAME`: the group of people that should be counted for the label
+- `GITLAB_SLACK_TOKEN`: the bot token that will be used to manipulate the reactions
+- `SLACK_REACT_CHANNEL_ID`: the channel that should be checked for merge request links
+- `SLACK_SELF_USER`: the user ID of the bot

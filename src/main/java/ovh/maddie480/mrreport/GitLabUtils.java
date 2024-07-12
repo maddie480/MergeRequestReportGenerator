@@ -29,7 +29,7 @@ public final class GitLabUtils {
 
             for (JSONObject project : GitLabUtils.paginatedRequest("https://gitlab.com/api/v4/groups/" + groupId + "/projects?page=")) {
                 if (Arrays.stream(System.getenv("GITLAB_IGNORED_PREFIXES").split(",")).noneMatch(p -> project.getString("path").startsWith(p))) {
-                    projectIds.put(project.getString("name_with_namespace"), project.getLong("id"));
+                    projectIds.put(project.getString("path_with_namespace"), project.getLong("id"));
                 }
             }
         }
